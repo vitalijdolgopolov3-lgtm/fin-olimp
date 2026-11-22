@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://fin-olimp-production.up.railway.app/sitemap.xml
