@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-label="Лаконичный финансовый график">
+ <rect width="1000" height="560" fill="#f6f9fd"/><circle cx="850" cy="90" r="220" fill="#ecf3fa"/>
+ <g stroke="#dfe8f3" stroke-width="1"><path d="M96 115H920M96 195H920M96 275H920M96 355H920M96 435H920"/></g>
+ <path d="M95 435V100M95 435H925" fill="none" stroke="#b1c5dc" stroke-width="2"/>
+ <polyline points="96,345 239,325 376,281 514,294 649,205 785,179 900,114" fill="none" stroke="#386ea8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+ <g fill="#fff" stroke="#386ea8" stroke-width="4"><circle cx="96" cy="345" r="8"/><circle cx="239" cy="325" r="8"/><circle cx="376" cy="281" r="8"/><circle cx="514" cy="294" r="8"/><circle cx="649" cy="205" r="8"/><circle cx="785" cy="179" r="8"/><circle cx="900" cy="114" r="8"/></g><g fill="#d3e2f2"><rect x="190" y="392" width="55" height="42" rx="8"/><rect x="310" y="370" width="55" height="64" rx="8"/><rect x="430" y="345" width="55" height="89" rx="8"/><rect x="550" y="320" width="55" height="114" rx="8"/></g></svg>
