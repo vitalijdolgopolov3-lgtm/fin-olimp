@@ -9,6 +9,25 @@ function write(list){const tmp=DATA+'.tmp';fs.writeFileSync(tmp,JSON.stringify(l
 function authed(req){const a=req.headers.authorization||'';if(!a.startsWith('Basic '))return false;let s='';try{s=Buffer.from(a.slice(6),'base64').toString('utf8')}catch{return false}const expected='admin:'+PASSWORD;const x=crypto.createHash('sha256').update(s).digest(),y=crypto.createHash('sha256').update(expected).digest();return crypto.timingSafeEqual(x,y)}
 const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://localhost');res.setHeader('X-Frame-Options','DENY');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Content-Type-Options','nosniff');
 if(req.method==='GET'&&(url.pathname==='/'||url.pathname==='/index.html')){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});return fs.createReadStream(INDEX).pipe(res)}
+if(req.method==='GET' && url.pathname==='/sitemap.xml'){
+ const hostname=(req.headers['x-forwarded-host']||req.headers.host||'').split(',')[0].trim();
+ const safe=/^[a-z0-9.-]+(?::[0-9]+)?$/i.test(hostname)?hostname:'localhost';
+ const base='https://'+safe.replace(/:[0-9]+$/,'');
+ res.writeHead(200,{'Content-Type':'application/xml; charset=utf-8'});
+ return res.end('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'+base+'/</loc></url><url><loc>'+base+'/otzyvy/</loc></url></urlset>');
+}
+if(req.method==='GET'&&!url.pathname.startsWith('/api/')){
+ let requested;
+ try{requested=decodeURIComponent(url.pathname)}catch{return send(res,400,{error:'Неверный путь'})}
+ const root=path.join(__dirname,'public');
+ const target=path.resolve(root,'.'+requested,(requested.endsWith('/')?'index.html':''));
+ if(!target.startsWith(root+path.sep))return send(res,403,{error:'Доступ запрещён'});
+ let stat;try{stat=fs.statSync(target)}catch{return send(res,404,{error:'Страница не найдена'})}
+ if(!stat.isFile())return send(res,404,{error:'Страница не найдена'});
+ const ext=path.extname(target).toLowerCase();const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp','.txt':'text/plain; charset=utf-8','.png':'image/png','.ico':'image/x-icon'};
+ res.writeHead(200,{'Content-Type':mime[ext]||'application/octet-stream','Cache-Control':ext==='.html'?'no-cache':'public, max-age=3600'});
+ return fs.createReadStream(target).pipe(res);
+}
 if(url.pathname==='/api/videos'&&req.method==='GET')return send(res,200,list());
 if(url.pathname==='/api/admin/check'&&req.method==='GET')return send(res,authed(req)?200:401,{ok:authed(req)});
 if(url.pathname.startsWith('/api/')&&!authed(req))return send(res,401,{error:'Неверный пароль'});
